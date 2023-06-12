@@ -8,19 +8,25 @@ npm run cron
 Error:
 
 ```
-.../playground/lib/svc/jobs/analyze-caption-job.ts:1
-import logger from "@/lib/logger";
+...playground/lib/svc/cron.ts:1
+import { SHARE_ENV, Worker } from 'worker_threads';
 ^^^^^^
 
 SyntaxError: Cannot use import statement outside a module
-    at Object.compileFunction (node:vm:360:18)
-    at wrapSafe (node:internal/modules/cjs/loader:1055:15)
-    at Module._compile (node:internal/modules/cjs/loader:1090:27)
-    at Object.Module._extensions..js (node:internal/modules/cjs/loader:1180:10)
-    at Module.load (node:internal/modules/cjs/loader:1004:32)
-    at Function.Module._load (node:internal/modules/cjs/loader:839:12)
-    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)
-    at MessagePort.<anonymous> (node:internal/main/worker_thread:196:24)
-    at MessagePort.[nodejs.internal.kHybridDispatch] (node:internal/event_target:694:20)
-    at MessagePort.exports.emitMessage (node:internal/per_context/messageport:23:28)
 ```
+
+## Required solution
+
+1) Be able to run cron.ts using ts-node
+2) No extra compilation to .js file 
+3) No need to fix existing import statements. For example: `import logger from "@/lib/logger";` should remain as is.
+
+4) Should still be able to do run next.js app alongside the cron.ts. For example, `npm run dev` in one terminal, and `npm run cron` on another terminal running at the same time without issues. Verify by checking `http://localhost:3000/` 
+
+5) Be able to keep extension of existing typecsript files as .ts
+
+## Related issue:
+
+See: https://github.com/TypeStrong/ts-node/issues/1007
+
+Problem with the above approach is it requires changing the imports to end in .ts. Which is not acceptable.
